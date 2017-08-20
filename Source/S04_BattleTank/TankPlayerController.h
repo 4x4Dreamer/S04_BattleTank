@@ -15,8 +15,28 @@ class S04_BATTLETANK_API ATankPlayerController : public APlayerController
 {
 	GENERATED_BODY()
 	
-public:
-	ATank* GetControlledTank() const;
-	
+private:
 	void BeginPlay() override;
+
+	void Tick(float DeltaTime) override;
+
+	ATank* GetControlledTank() const;
+
+	// Start the tank moving the barrel so that a shot would hit where
+	// the crosshair intersects the world
+	void AimTowardsCrosshair();
+
+	//Return an OUT parameter, true if hit landscape
+	bool GetSightRayHitLocation(FVector& Hitlocation) const;
+
+	bool GetLookVectorHitLocation(FVector ScreenLocation, FVector & LookDirection) const;
+
+	bool GetLookDirection(FVector2D ScreenLocation, FVector & LookDirection) const;
+
+	UPROPERTY(EditAnywhere)
+	float CrosshairXLocation = 0.5f;
+	UPROPERTY(EditAnywhere)
+	float CrosshairYLocation = 0.3333f;
+	UPROPERTY(EditAnywhere)
+	float LineTraceRange = 1000000;
 };
