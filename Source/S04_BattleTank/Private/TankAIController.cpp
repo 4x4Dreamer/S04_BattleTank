@@ -2,6 +2,7 @@
 
 #include "TankAIController.h"
 #include "S04_BattleTank.h"
+#include "Tank.h"
 #include "Engine.h"
 
 void ATankAIController::BeginPlay()

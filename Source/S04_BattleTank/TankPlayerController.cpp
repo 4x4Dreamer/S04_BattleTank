@@ -2,6 +2,7 @@
 
 #include "TankPlayerController.h"
 #include "S04_BattleTank.h"
+#include "Tank.h"
 #include "Engine.h"
 
 void ATankPlayerController::BeginPlay()
