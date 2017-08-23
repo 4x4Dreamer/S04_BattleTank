@@ -11,7 +11,7 @@ UTankAimingComponent::UTankAimingComponent()
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
-	PrimaryComponentTick.bCanEverTick = true; // TODO Should this really tick?
+	PrimaryComponentTick.bCanEverTick = false;
 
 	// ...
 }
@@ -58,13 +58,13 @@ void UTankAimingComponent::AimAt(FVector HitLocation, float LaunchSpeed)
 		//UE_LOG(LogTemp, Warning, TEXT("%s Aiming at %s"), *TankName, *AimDirection.ToString());
 
 		auto Time = GetWorld()->GetTimeSeconds();
-		UE_LOG(LogTemp, Warning, TEXT("%f: %s: AimSolution found"), Time, *TankName);
+		//UE_LOG(LogTemp, Warning, TEXT("%f: %s: AimSolution found"), Time, *TankName);
 	}
 	else
 	{
 		auto TankName = GetOwner()->GetName();
 		auto Time = GetWorld()->GetTimeSeconds();
-		UE_LOG(LogTemp, Warning, TEXT("%f: %s: No aim solve found"), Time, *TankName);
+		//UE_LOG(LogTemp, Warning, TEXT("%f: %s: No aim solve found"), Time, *TankName);
 	}
 	// If no solution found do nothing
 }
@@ -79,6 +79,12 @@ void UTankAimingComponent::MoveBarrelTowards(FVector AimDirection)
 	//UE_LOG(LogTemp, Warning, TEXT("DeltaRotator: %s"), *DeltaRotator.ToString());
 
 	Barrel->Elevate(DeltaRotator.Pitch);
+	Turrent->Rotate(DeltaRotator.Yaw);
+	// MYCHANGE: added this check to minimize barrel "jitter" problen
+	//if (!(abs(DeltaRotator.Yaw) < 1))
+	//{
+	//	Turrent->Rotate(DeltaRotator.Yaw);
+	//}
 }
 
 
