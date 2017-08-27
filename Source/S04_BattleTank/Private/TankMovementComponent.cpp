@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright 2017 memtrade.com
 
 #include "TankMovementComponent.h"
 #include "TankTrack.h"
@@ -22,8 +22,8 @@ void UTankMovementComponent::RequestDirectMove(const FVector & MoveVelocity, boo
 	auto RightThrow = FVector::CrossProduct(TankForward, AIForwardIntention).Z;
 	IntendTurnRight(RightThrow);
 
-	auto TankName = GetOwner()->GetName();
-	UE_LOG(LogTemp, Warning, TEXT("%s vectoring to %s"), *TankName, *(AIForwardIntention.ToString()));
+	// auto TankName = GetOwner()->GetName();
+	//UE_LOG(LogTemp, Warning, TEXT("%s vectoring to %s"), *TankName, *(AIForwardIntention.ToString()));
 
 }
 
