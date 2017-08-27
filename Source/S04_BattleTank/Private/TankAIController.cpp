@@ -20,7 +20,10 @@ void ATankAIController::Tick(float DeltaTime)
 
 	if (PlayerTank)
 	{
-		// TODO Move toward the player
+		// Move toward the player
+		//   MovetoACtor() is inherited function of AAIController
+		//   It calls RequestDirectMove (also an inhertied function) in TankMoveMentComponent
+		MoveToActor(PlayerTank, AcceptanceRadius);  // TODOcheck if radius is in cm
 
 		// Aim towards the player
 		ControlledTank->AimAt(PlayerTank->GetActorLocation());
