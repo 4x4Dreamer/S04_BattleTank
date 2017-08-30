@@ -7,24 +7,29 @@
 
 void ATankPlayerController::BeginPlay()
 {
+	UE_LOG(LogTemp, Warning, TEXT("TankPlayerController C++ BeginPlay"));
 	Super::BeginPlay();
 	auto AimingComponent = GetPawn()->FindComponentByClass<UTankAimingComponent>();
 	if (!ensure(AimingComponent)) { return; }
 	FoundAimingComponent(AimingComponent);
+	UE_LOG(LogTemp, Warning, TEXT("TankPlayerController C++ BeginPlay End"));
 }
 
 void ATankPlayerController::Tick(float DeltaTime)
 {
+	//UE_LOG(LogTemp, Warning, TEXT("TankPlayerController C++  ticking")); // YES !!!
 	Super::Tick(DeltaTime);
+
 	AimTowardsCrosshair();
 }
 
 void ATankPlayerController::AimTowardsCrosshair()
 {
+	if (!GetPawn()) { return; }  // e.g. if not possing
 	auto AimingComponent = GetPawn()->FindComponentByClass<UTankAimingComponent>();
 	if (!ensure(AimingComponent)) { return; }
 
-	FVector HitLocation; // Out parameter
+		FVector HitLocation; // Out parameter
 	if (GetSightRayHitLocation(HitLocation)) // has "side-effect",is going to trace line
 	{
 		// UE_LOG(LogTemp, Warning, TEXT("Hit Location: %s"), *HitLocation.ToString());

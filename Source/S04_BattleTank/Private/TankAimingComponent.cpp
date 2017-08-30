@@ -5,7 +5,8 @@
 #include "TankTurrent.h"
 #include "Projectile.h"
 #include "Kismet/GameplayStatics.h"
-
+#include <string>
+#include <iostream>
 
 // Sets default values for this component's properties
 UTankAimingComponent::UTankAimingComponent()
@@ -13,15 +14,65 @@ UTankAimingComponent::UTankAimingComponent()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	bWantsBeginPlay = true;
-	PrimaryComponentTick.bCanEverTick = false;
+	PrimaryComponentTick.bCanEverTick = true;
 
 	// ...
 }
 
+void UTankAimingComponent::BeginPlay()
+{
+	Super::BeginPlay();  // I added this
+
+	UE_LOG(LogTemp, Warning, TEXT("Aiming Comp BeginPlay"))
+	// So that first fire is after reload
+	LastFireTime = FPlatformTime::Seconds();
+}
+
 void UTankAimingComponent::Initialise(UTankBarrel* BarrelToSet, UTankTurrent* TurrentToSet)
 {
+	UE_LOG(LogTemp, Warning, TEXT("Aiming Comp Init"))
 	Barrel = BarrelToSet;
 	Turrent = TurrentToSet;
+}
+
+void UTankAimingComponent::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction)
+{
+	//char* test = "not set\0";
+	//auto test = "not set\0";
+
+	//auto test = std::string("not set");
+
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction); // added by me
+
+	//UE_LOG(LogTemp, Warning, TEXT("Aiming Comp Ticking")) // YES !!!
+	if ((FPlatformTime::Seconds() - LastFireTime) < ReLoadTimeInSeconds)
+	{
+		FiringState = EFiringState::Reloading;
+		UE_LOG(LogTemp, Warning, TEXT("Firing State: Reloading"))
+	}
+	else
+	if (IsBarrelMoving())
+	{
+		FiringState = EFiringState::Aiming;
+		UE_LOG(LogTemp, Warning, TEXT("Firing State: Aiming"))
+	}
+	else
+	{
+		FiringState = EFiringState::Locked;
+		UE_LOG(LogTemp, Warning, TEXT("Firing State: Locked"))
+	}
+
+	//char* test = std::string(FiringState);
+	//std::cout << "Test\n";
+
+	//UE_LOG(LogTemp, Warning, TEXT("Firing State: %s"), *test)
+}
+
+bool  UTankAimingComponent::IsBarrelMoving()
+{
+	if (!ensure(Barrel)) { return false; }
+	auto BarrelForward = Barrel->GetForwardVector();
+	return !BarrelForward.Equals(AimDirection, 0.01); // vectors are equal
 }
 
 void UTankAimingComponent::AimAt(FVector HitLocation)
@@ -45,7 +96,7 @@ void UTankAimingComponent::AimAt(FVector HitLocation)
 
 	if (bHaveAimSolution)
 	{
-		auto AimDirection = OutLaunchVelocity.GetSafeNormal();
+		AimDirection = OutLaunchVelocity.GetSafeNormal();
 		MoveBarrelTowards(AimDirection);
 	}
 	// If no solution found do nothing
@@ -62,8 +113,16 @@ void UTankAimingComponent::MoveBarrelTowards(FVector AimDirection)
 
 	//UE_LOG(LogTemp, Warning, TEXT("DeltaRotator: %s"), *DeltaRotator.ToString());
 
+	// Always yaw the shortest way
 	Barrel->Elevate(DeltaRotator.Pitch);
-	Turrent->Rotate(DeltaRotator.Yaw);
+	if (FMath::Abs(DeltaRotator.Yaw) < 180)
+	{
+		Turrent->Rotate(DeltaRotator.Yaw);
+	}
+	else // Avoid going the long-way round
+	{
+		Turrent->Rotate(-DeltaRotator.Yaw);
+	}
 
 	// MYCHANGE: tried this check to minimize barrel "jitter" problen
 	//if (!(abs(DeltaRotator.Yaw) < 1))
@@ -74,12 +133,13 @@ void UTankAimingComponent::MoveBarrelTowards(FVector AimDirection)
 
 void UTankAimingComponent::Fire()
 {
-	if (!ensure(Barrel && ProjectileBlueprint)) { return; }
-	bool isReloaded = (FPlatformTime::Seconds() - LastFireTime) > ReLoadTimeInSeconds;
-
-	if (isReloaded)
+	//UE_LOG(LogTemp, Warning, TEXT("HERE"))
+	if (FiringState != EFiringState::Reloading)
 	{
+		//UE_LOG(LogTemp, Warning, TEXT("HERE2"))
 		//Spawn a projectile at the socket location on the barrel
+		if (!ensure(Barrel)) { return; }
+		if (!ensure(ProjectileBlueprint)) { return; }
 		auto Projectile = GetWorld()->SpawnActor<AProjectile>(
 			ProjectileBlueprint,
 			Barrel->GetSocketLocation(FName("Projectile")),

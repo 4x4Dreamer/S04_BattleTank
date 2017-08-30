@@ -15,6 +15,8 @@ void ATankAIController::BeginPlay()
 // Called every frame
 void ATankAIController::Tick(float DeltaTime)
 {
+	//UE_LOG(LogTemp, Warning, TEXT("TankAIController C++  ticking"));   // Yes!!!
+
 	Super::Tick(DeltaTime);
 
 	auto PlayerTank = GetWorld()->GetFirstPlayerController()->GetPawn();
@@ -25,12 +27,13 @@ void ATankAIController::Tick(float DeltaTime)
 	// Move toward the player
 	//   MovetoACtor() is inherited function of AAIController
 	//   It calls RequestDirectMove (also an inhertied function) in TankMoveMentComponent
-	MoveToActor(PlayerTank, AcceptanceRadius);  // TODOcheck if radius is in cm
+	MoveToActor(PlayerTank, AcceptanceRadius);  // TODO check if radius is in cm
 
 	// Aim towards the player
 	auto AimingComponent = ControlledTank->FindComponentByClass<UTankAimingComponent>();
+
 	AimingComponent->AimAt(PlayerTank->GetActorLocation());
 
-	AimingComponent->Fire(); // limit firing rate done in tank
+	//AimingComponent->Fire(); // limit firing rate done in tank
 	
 }
