@@ -16,6 +16,7 @@ void ATankPlayerController::BeginPlay()
 
 void ATankPlayerController::Tick(float DeltaTime)
 {
+	//UE_LOG(LogTemp, Warning, TEXT("PlayerController is ticking"))
 	Super::Tick(DeltaTime);
 
 	AimTowardsCrosshair();
@@ -31,6 +32,7 @@ void ATankPlayerController::AimTowardsCrosshair()
 	bool bGotHitLocation = GetSightRayHitLocation(HitLocation);
 	if (bGotHitLocation) // has "side-effect", is going to trace line
 	{
+		//UE_LOG(LogTemp, Warning, TEXT("PlayerController calling AimingComponent->AimAt(HitLocation)"))
 		AimingComponent->AimAt(HitLocation);
 	}
 }

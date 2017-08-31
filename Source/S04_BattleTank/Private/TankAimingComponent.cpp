@@ -54,6 +54,11 @@ void UTankAimingComponent::TickComponent(float DeltaTime, enum ELevelTick TickTy
 	}
 }
 
+EFiringState UTankAimingComponent::GetFiringState() const
+{
+	return FiringState;
+}
+
 bool  UTankAimingComponent::IsBarrelMoving()
 {
 	if (!ensure(Barrel)) { return false; }
@@ -63,6 +68,7 @@ bool  UTankAimingComponent::IsBarrelMoving()
 
 void UTankAimingComponent::AimAt(FVector HitLocation)
 {
+	//UE_LOG(LogTemp, Warning, TEXT("Entering AimingComponent->AimAt()"))
 	if (!ensure(Barrel)) { return; }
 	
 	FVector OutLaunchVelocity = FVector(0.0f, 0.0f, 0.0f);
@@ -79,9 +85,10 @@ void UTankAimingComponent::AimAt(FVector HitLocation)
 		0,
 		ESuggestProjVelocityTraceOption::DoNotTrace // Parameter must be present to prevent bug
 	);
-
+	//UE_LOG(LogTemp, Warning, TEXT("AimingComponent->AimAt() Before"))
 	if (bHaveAimSolution)
 	{
+		//UE_LOG(LogTemp, Warning, TEXT("AimingComponent->AimAt() After"))
 		AimDirection = OutLaunchVelocity.GetSafeNormal();
 		MoveBarrelTowards(AimDirection);
 	}
@@ -126,5 +133,6 @@ void UTankAimingComponent::Fire()
 		LastFireTime = FPlatformTime::Seconds();
 	}
 }
+
 
 
