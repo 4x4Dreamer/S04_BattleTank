@@ -21,7 +21,7 @@ UTankAimingComponent::UTankAimingComponent()
 
 void UTankAimingComponent::BeginPlay()
 {
-	Super::BeginPlay();  // I added this
+	//Super::BeginPlay();  // I added this
 
 	UE_LOG(LogTemp, Warning, TEXT("Aiming Comp BeginPlay"))
 	// So that first fire is after reload
@@ -37,35 +37,21 @@ void UTankAimingComponent::Initialise(UTankBarrel* BarrelToSet, UTankTurrent* Tu
 
 void UTankAimingComponent::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction)
 {
-	//char* test = "not set\0";
-	//auto test = "not set\0";
-
-	//auto test = std::string("not set");
-
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction); // added by me
 
-	//UE_LOG(LogTemp, Warning, TEXT("Aiming Comp Ticking")) // YES !!!
 	if ((FPlatformTime::Seconds() - LastFireTime) < ReLoadTimeInSeconds)
 	{
 		FiringState = EFiringState::Reloading;
-		UE_LOG(LogTemp, Warning, TEXT("Firing State: Reloading"))
 	}
 	else
 	if (IsBarrelMoving())
 	{
 		FiringState = EFiringState::Aiming;
-		UE_LOG(LogTemp, Warning, TEXT("Firing State: Aiming"))
 	}
 	else
 	{
 		FiringState = EFiringState::Locked;
-		UE_LOG(LogTemp, Warning, TEXT("Firing State: Locked"))
 	}
-
-	//char* test = std::string(FiringState);
-	//std::cout << "Test\n";
-
-	//UE_LOG(LogTemp, Warning, TEXT("Firing State: %s"), *test)
 }
 
 bool  UTankAimingComponent::IsBarrelMoving()
@@ -111,8 +97,6 @@ void UTankAimingComponent::MoveBarrelTowards(FVector AimDirection)
 	auto AimAsRotator = AimDirection.Rotation();
 	auto DeltaRotator = AimAsRotator - BarrelRotator;
 
-	//UE_LOG(LogTemp, Warning, TEXT("DeltaRotator: %s"), *DeltaRotator.ToString());
-
 	// Always yaw the shortest way
 	Barrel->Elevate(DeltaRotator.Pitch);
 	if (FMath::Abs(DeltaRotator.Yaw) < 180)
@@ -123,20 +107,12 @@ void UTankAimingComponent::MoveBarrelTowards(FVector AimDirection)
 	{
 		Turrent->Rotate(-DeltaRotator.Yaw);
 	}
-
-	// MYCHANGE: tried this check to minimize barrel "jitter" problen
-	//if (!(abs(DeltaRotator.Yaw) < 1))
-	//{
-	//	Turrent->Rotate(DeltaRotator.Yaw);
-	//}
 }
 
 void UTankAimingComponent::Fire()
 {
-	//UE_LOG(LogTemp, Warning, TEXT("HERE"))
 	if (FiringState != EFiringState::Reloading)
 	{
-		//UE_LOG(LogTemp, Warning, TEXT("HERE2"))
 		//Spawn a projectile at the socket location on the barrel
 		if (!ensure(Barrel)) { return; }
 		if (!ensure(ProjectileBlueprint)) { return; }
@@ -147,10 +123,6 @@ void UTankAimingComponent::Fire()
 			);
 
 		Projectile->LaunchProjectile(LaunchSpeed);
-
-		auto Time = GetWorld()->GetTimeSeconds();
-		UE_LOG(LogTemp, Warning, TEXT("%f: tank %s launched projectile at speed: %f"), Time, *GetName(), LaunchSpeed);
-
 		LastFireTime = FPlatformTime::Seconds();
 	}
 }

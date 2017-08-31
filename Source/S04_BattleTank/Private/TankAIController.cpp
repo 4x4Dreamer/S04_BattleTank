@@ -15,8 +15,6 @@ void ATankAIController::BeginPlay()
 // Called every frame
 void ATankAIController::Tick(float DeltaTime)
 {
-	//UE_LOG(LogTemp, Warning, TEXT("TankAIController C++  ticking"));   // Yes!!!
-
 	Super::Tick(DeltaTime);
 
 	auto PlayerTank = GetWorld()->GetFirstPlayerController()->GetPawn();
@@ -34,6 +32,6 @@ void ATankAIController::Tick(float DeltaTime)
 
 	AimingComponent->AimAt(PlayerTank->GetActorLocation());
 
-	//AimingComponent->Fire(); // limit firing rate done in tank
+	AimingComponent->Fire(); // limit firing rate done in tank
 	
 }
