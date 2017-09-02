@@ -62,11 +62,11 @@ private:
 	UTankBarrel* Barrel = nullptr;
 	UTankTurrent* Turrent = nullptr;
 
-	UPROPERTY(EditDefaultsOnly, category = "Firing")
-	float LaunchSpeed = 8000.0f;
-	
 	UPROPERTY(EditDefaultsOnly, category = "Setup")
 	TSubclassOf<AProjectile> ProjectileBlueprint;
+
+	UPROPERTY(EditDefaultsOnly, category = "Firing")
+	float LaunchSpeed = 8000.0f;
 
 	UPROPERTY(EditDefaultsOnly, category = "Firing")
 	float ReLoadTimeInSeconds = 3;
